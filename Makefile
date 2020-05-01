@@ -2,7 +2,7 @@ CXX = g++
 
 CXXFLAGS = -g -Wall -Wformat
 CXXFLAGS += -std=c++17
-LIBS = -lSDL2 -lSDL2_ttf
+LIBS = -lBox2D
 EXE = out/box2d-test
 BUILDDIR = build
 SRCDIR = src
