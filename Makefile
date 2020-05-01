@@ -6,6 +6,7 @@ LIBS = -lBox2D
 EXE = out/box2d-test
 BUILDDIR = build
 SRCDIR = src
+MAIN=main
 
 SOURCES = $(shell find . -type f -wholename "**/*.cpp" | grep -v main.cpp | sed -e 's/\.\/$(SRCDIR)\///')
 OBJS = $(addprefix $(BUILDDIR)/, $(addsuffix .o, $(basename $(SOURCES))))
@@ -27,11 +28,11 @@ build: buildir $(EXE)
 buildir:
 	mkdir -p build
 
-$(EXE): $(BUILDDIR)/main.o $(OBJS)
+$(EXE): $(BUILDDIR)/$(MAIN).o $(OBJS)
 	mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LIBS)
 
-$(BUILDDIR)/main.o: $(SRCDIR)/main.cpp
+$(BUILDDIR)/$(MAIN).o: $(SRCDIR)/$(MAIN).cpp
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp $(SRCDIR)/%.h

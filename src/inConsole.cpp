@@ -4,11 +4,7 @@
 #include <Box2D/Dynamics/b2Fixture.h>
 #include <Box2D/Dynamics/b2World.h>
 
-#include <iostream>
-
 int main() {
-    std::cout << "Hello world !" << std::endl;
-
     // world definition
     b2Vec2 gravity(0.0f, -10.0f);
     b2World world(gravity);
