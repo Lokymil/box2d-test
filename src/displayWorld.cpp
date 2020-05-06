@@ -27,7 +27,7 @@ b2World* initWorld() {
 
     // ground shape def as box of 100 units large and 20 units tall
     b2PolygonShape groundBox;
-    groundBox.SetAsBox(50.0f, 5.0f);
+    groundBox.SetAsBox(20.0f, 5.0f);
 
     // Associate texture to body
     // Static object by definition have no mass then 0 density
