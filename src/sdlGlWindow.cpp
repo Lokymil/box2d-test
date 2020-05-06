@@ -6,7 +6,6 @@
 
 int main(int argc, char** argv) {
     // Notre fenêtre
-
     SDL_Window* fenetre(0);
     SDL_GLContext contexteOpenGL(0);
 
@@ -21,16 +20,6 @@ int main(int argc, char** argv) {
 
         return -1;
     }
-
-    // Version d'OpenGL
-
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-
-    // Double Buffer
-
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
     // Création de la fenêtre
 
