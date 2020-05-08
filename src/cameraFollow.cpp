@@ -7,12 +7,17 @@
 #include <GLES3/gl3.h>
 #include <SDL2/SDL.h>
 
+#include <iostream>
+
 int WINDOW_WIDTH = 800;
 int WINDOW_HEIGHT = 600;
 int WINDOW_RATIO = WINDOW_WIDTH / 2;
-// This 2 variable should have value swapped but in this case there is no projection matrix then it works
-float P2M = 20.0f;
-float M2P = 1.0f / P2M;
+float M2P = 20.0f;
+float P2M = 1.0f / P2M;
+
+b2Body* bodyToFollow = NULL;
+
+b2Vec2* center = new b2Vec2();
 
 b2World* initWorld() {
     // world definition
@@ -38,7 +43,7 @@ b2World* initWorld() {
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
     bodyDef.position.Set(0.0f, 20.0f);
-    b2Body* body = pWorld->CreateBody(&bodyDef);
+    bodyToFollow = pWorld->CreateBody(&bodyDef);
 
     // shape for dynamic body
     b2PolygonShape dynamicBox;
@@ -51,7 +56,7 @@ b2World* initWorld() {
     fixtureDef.friction = 0.3f;
 
     // using fixture to associate shape to body
-    body->CreateFixture(&fixtureDef);
+    bodyToFollow->CreateFixture(&fixtureDef);
 
     return pWorld;
 }
@@ -106,17 +111,27 @@ void draw(b2Body* body) {
 
     b2Vec2 pos = body->GetPosition();
 
+    // Centered screen boundary
+    int leftNDC = center->x * M2P - WINDOW_WIDTH / 2;
+    int rightNDC = center->x * M2P + WINDOW_WIDTH / 2;
+    int bottomNDC = center->y * M2P - WINDOW_HEIGHT / 2;
+    int topNDC = center->y * M2P + WINDOW_HEIGHT / 2;
+
     b2PolygonShape* polygon = (b2PolygonShape*)shape;
     int verticesNumber = polygon->m_count;
     float vertices[verticesNumber * 2];
     for (int i = 0; i < verticesNumber; i++) {
         b2Vec2 vertex = polygon->m_vertices[i];
-        float meterX = pos.x + vertex.x;
-        float meterY = pos.y + vertex.y;
-        float x = meterX * M2P;
-        float y = meterY * M2P;
-        vertices[i * 2] = x;
-        vertices[i * 2 + 1] = y;
+        float x = (pos.x + vertex.x) * M2P;
+        float y = (pos.y + vertex.y) * M2P;
+
+        // Applying orthogonal projection matrix
+        // /!\ all factors MUST BE float otherwise, when shifted from origin (0,0) values won't be exact
+        float xNDC = (2 * x / (rightNDC - leftNDC)) - ((rightNDC + leftNDC) * 1.0f / (rightNDC - leftNDC));
+        float yNDC = (2 * y / (topNDC - bottomNDC)) - ((topNDC + bottomNDC) * 1.0f / (topNDC - bottomNDC));
+
+        vertices[i * 2] = xNDC;
+        vertices[i * 2 + 1] = yNDC;
     }
 
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, vertices);
@@ -125,7 +140,20 @@ void draw(b2Body* body) {
     glDisableVertexAttribArray(0);
 }
 
+void recenterCamera() {
+    if (bodyToFollow == NULL) {
+        center->x = 0;
+        center->y = 0;
+        return;
+    }
+
+    b2Vec2 position = bodyToFollow->GetPosition();
+    center->x = position.x;
+    center->y = position.y;
+}
+
 void display(b2World* pWorld) {
+    recenterCamera();
     glClear(GL_COLOR_BUFFER_BIT);
     b2Body* body = pWorld->GetBodyList();
     while (body) {
@@ -176,6 +204,8 @@ int main() {
     SDL_DestroyWindow(pWindow);
     SDL_Quit();
 
+    delete center;
+    bodyToFollow = NULL;
     delete pWorld;
 
     return 0;
