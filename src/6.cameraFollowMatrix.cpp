@@ -17,7 +17,7 @@ int WINDOW_RATIO = WINDOW_WIDTH / 2;
 float M2P = 20.0f;
 float P2M = 1.0f / P2M;
 
-b2Body* bodyToFollow = NULL;
+b2Body* player = NULL;
 
 b2Vec2* center = new b2Vec2();
 
@@ -45,7 +45,7 @@ b2World* initWorld() {
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
     bodyDef.position.Set(0.0f, 20.0f);
-    bodyToFollow = pWorld->CreateBody(&bodyDef);
+    player = pWorld->CreateBody(&bodyDef);
 
     // shape for dynamic body
     b2PolygonShape dynamicBox;
@@ -58,7 +58,7 @@ b2World* initWorld() {
     fixtureDef.friction = 0.3f;
 
     // using fixture to associate shape to body
-    bodyToFollow->CreateFixture(&fixtureDef);
+    player->CreateFixture(&fixtureDef);
 
     return pWorld;
 }
@@ -146,13 +146,13 @@ void draw(b2Body* body) {
 }
 
 void recenterCamera() {
-    if (bodyToFollow == NULL) {
+    if (player == NULL) {
         center->x = 0;
         center->y = 0;
         return;
     }
 
-    b2Vec2 position = bodyToFollow->GetPosition();
+    b2Vec2 position = player->GetPosition();
     center->x = position.x;
     center->y = position.y;
 }
@@ -210,7 +210,7 @@ int main() {
     SDL_Quit();
 
     delete center;
-    bodyToFollow = NULL;
+    player = NULL;
     delete pWorld;
 
     return 0;
