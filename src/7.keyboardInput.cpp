@@ -17,6 +17,8 @@ int WINDOW_RATIO = WINDOW_WIDTH / 2;
 float M2P = 20.0f;
 float P2M = 1.0f / P2M;
 
+b2Vec2 gravity(0.0f, -80.0f);
+
 b2Body* player = NULL;
 b2Body* ground = NULL;
 
@@ -24,7 +26,6 @@ b2Vec2* center = new b2Vec2();
 
 b2World* initWorld() {
     // world definition
-    b2Vec2 gravity(0.0f, -10.0f);
     b2World* pWorld = new b2World(gravity);
 
     // ground body definition
@@ -175,13 +176,13 @@ void handleInput() {
     moveVector.y = player->GetLinearVelocity().y;
 
     if (keyboardState[SDL_SCANCODE_RIGHT]) {
-        moveVector.x = 10.0f;
+        moveVector.x = 15.0f;
     } else if (keyboardState[SDL_SCANCODE_LEFT]) {
-        moveVector.x = -10.0f;
+        moveVector.x = -15.0f;
     }
 
     if (keyboardState[SDL_SCANCODE_UP]) {
-        moveVector.y = 10.0f;
+        moveVector.y = 30.0f;
     }
 
     player->SetLinearVelocity(moveVector);
