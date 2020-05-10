@@ -1,5 +1,6 @@
 #include <Box2D/Collision/Shapes/b2PolygonShape.h>
 #include <Box2D/Common/b2Math.h>
+#include <Box2D/Dynamics/Contacts/b2Contact.h>
 #include <Box2D/Dynamics/b2Body.h>
 #include <Box2D/Dynamics/b2Fixture.h>
 #include <Box2D/Dynamics/b2World.h>
@@ -20,17 +21,49 @@ float P2M = 1.0f / P2M;
 b2Vec2 gravity(0.0f, -80.0f);
 
 b2Body* player = NULL;
+char playerUserData = 'p';
 b2Body* ground = NULL;
+char groundUserData = 'g';
+
+bool isGrounded = false;
 
 b2Vec2* center = new b2Vec2();
+
+class MyContactListener : public b2ContactListener {
+    void BeginContact(b2Contact* contact) {
+        char* bodyUserDataA = (char*)contact->GetFixtureA()->GetBody()->GetUserData();
+
+        char* bodyUserDataB = (char*)contact->GetFixtureB()->GetBody()->GetUserData();
+
+        if ((*bodyUserDataA == groundUserData && *bodyUserDataB == playerUserData) ||
+            (*bodyUserDataA == playerUserData && *bodyUserDataB == groundUserData)) {
+            isGrounded = true;
+        }
+    }
+
+    void EndContact(b2Contact* contact) {
+        char* bodyUserDataA = (char*)contact->GetFixtureA()->GetBody()->GetUserData();
+
+        char* bodyUserDataB = (char*)contact->GetFixtureB()->GetBody()->GetUserData();
+
+        if ((*bodyUserDataA == groundUserData && *bodyUserDataB == playerUserData) ||
+            (*bodyUserDataA == playerUserData && *bodyUserDataB == groundUserData)) {
+            isGrounded = false;
+        }
+    }
+};
+
+MyContactListener* myContactListener = new MyContactListener();
 
 b2World* initWorld() {
     // world definition
     b2World* pWorld = new b2World(gravity);
+    pWorld->SetContactListener(myContactListener);
 
     // ground body definition
     b2BodyDef groundBodyDef;
     groundBodyDef.position.Set(0.0f, -15.0f);
+    groundBodyDef.userData = &groundUserData;
 
     // ground body instanciation in world from definition
     ground = pWorld->CreateBody(&groundBodyDef);
@@ -47,6 +80,8 @@ b2World* initWorld() {
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
     bodyDef.position.Set(0.0f, 20.0f);
+    bodyDef.userData = &playerUserData;
+
     player = pWorld->CreateBody(&bodyDef);
 
     // shape for dynamic body
@@ -181,7 +216,9 @@ void handleInput() {
         moveVector.x = -15.0f;
     }
 
-    if (keyboardState[SDL_SCANCODE_UP]) {
+    if (keyboardState[SDL_SCANCODE_UP] && isGrounded) {
+        // Use impulse instead of linear velocity ?
+        // In case of double jump, setting velocity might be more convinient
         moveVector.y = 30.0f;
     }
 
@@ -234,6 +271,7 @@ int main() {
     delete center;
     player = NULL;
     delete pWorld;
+    delete myContactListener;
 
     return 0;
 }
