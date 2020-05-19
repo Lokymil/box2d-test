@@ -68,7 +68,7 @@ b2World* initWorld() {
     // ground body instanciation in world from definition
     ground = pWorld->CreateBody(&groundBodyDef);
 
-    // ground shape def as box of 100 units large and 20 units tall
+    // ground shape def as box of 40 units large and 10 units tall
     b2PolygonShape groundBox;
     groundBox.SetAsBox(20.0f, 5.0f);
 
