@@ -5,6 +5,8 @@
 #include <Box2D/Dynamics/b2Body.h>
 #include <Box2D/Dynamics/b2World.h>
 
+#include "../game/Body.hpp"
+
 #define DEFAULT_GRAVITY -80.0f
 
 class World {
@@ -16,6 +18,9 @@ class World {
 
    public:
     b2World* m_pWorld;
+
+   private:
+    void addStaticBody(float x, float y, float widthFromOrigin, float heightFromOrigin, BodyType type);
 
    public:
     World();
