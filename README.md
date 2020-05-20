@@ -13,14 +13,30 @@ You need to install:
 
 ## Run
 
-To run a test, use the following command:
+### From a single file
+
+To run a test from a single file, use the following command:
 
 ```
-make single MAIN=[file name without .cpp extension]
+make single SRCDIR=[source folder where to find .cpp file] MAIN=[file name without .cpp extension]
 ```
 
 For instance:
 
 ```
-make single MAIN=1.inConsole
+make single SRCDIR=dirty MAIN=1.inConsole
+```
+
+### From a set of files
+
+To run a test with multiple files, use the collowing command:
+
+```
+make SRCDIR=[source folder where to find .cpp & .h files]
+```
+
+For instance:
+
+```
+make SRCDIR=jump
 ```

@@ -11,10 +11,10 @@ MAIN=main
 SOURCES = $(shell find . -type f -wholename "**/*.cpp" | grep -v main.cpp | sed -e 's/\.\/$(SRCDIR)\///')
 OBJS = $(addprefix $(BUILDDIR)/, $(addsuffix .o, $(basename $(SOURCES))))
 
-.PHONY: start debug build buildir clear valgrind single
+.PHONY: start debug build builddir clear valgrind single
 ##----------------------------------------------------
 
-start: build
+start: clear build
 	@echo "Start $(EXE)"
 	./$(EXE)
 
@@ -22,11 +22,12 @@ debug: build
 	@echo "Start $(EXE) in debug mode"
 	gdb ./$(EXE)
 
-build: buildir $(EXE)
+build: builddir $(EXE)
 	@echo "Build completed"
 
-buildir:
-	mkdir -p build
+builddir:
+	mkdir -p $(BUILDDIR)
+	mkdir -p out
 
 $(EXE): $(BUILDDIR)/$(MAIN).o $(OBJS)
 	mkdir -p $(dir $@)
@@ -39,7 +40,7 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp $(SRCDIR)/%.h
 	mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-single: $(SRCDIR)/$(MAIN).cpp
+single: $(SRCDIR)/$(MAIN).cpp clear builddir
 	mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -o $(EXE) $< $(LIBS)
 	@echo "Start $(EXE)"
