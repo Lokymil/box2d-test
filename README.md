@@ -40,3 +40,8 @@ For instance:
 ```
 make SRCDIR=jump
 ```
+
+## Contribute
+
+To add a new scenario, copy `base` folder; rename it with your scenario (eg.: `jump`, `shooting`) and rename window name un `graphics/Screen.cpp` accordingly.  
+Then you can do whatever you want as long as you follow `base` architecture.

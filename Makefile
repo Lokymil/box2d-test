@@ -8,7 +8,7 @@ BUILDDIR = build
 SRCDIR = src
 MAIN=main
 
-SOURCES = $(shell find . -type f -wholename "**/*.cpp" | grep -v main.cpp | sed -e 's/\.\/$(SRCDIR)\///')
+SOURCES = $(shell find . -type f -wholename "./$(SRCDIR)/**/*.cpp" | grep -v main.cpp | sed -e 's/\.\/$(SRCDIR)\///')
 OBJS = $(addprefix $(BUILDDIR)/, $(addsuffix .o, $(basename $(SOURCES))))
 
 .PHONY: start debug build builddir clear valgrind single
@@ -26,6 +26,7 @@ build: builddir $(EXE)
 	@echo "Build completed"
 
 builddir:
+	@echo $(OBJS)
 	mkdir -p $(BUILDDIR)
 	mkdir -p out
 
@@ -36,7 +37,7 @@ $(EXE): $(BUILDDIR)/$(MAIN).o $(OBJS)
 $(BUILDDIR)/$(MAIN).o: $(SRCDIR)/$(MAIN).cpp
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
 
-$(BUILDDIR)/%.o: $(SRCDIR)/%.cpp $(SRCDIR)/%.h
+$(BUILDDIR)/%.o: $(SRCDIR)/%.cpp $(SRCDIR)/%.hpp
 	mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
