@@ -12,8 +12,6 @@ class Player : public Body {
     STATE m_state;
     int m_healthPoints;
     InputDevice* m_pInputDevice;
-    int m_maxJump;
-    int m_jumpCount;
 
    private:
     void standingInput(std::vector<InputAction> actions);
