@@ -8,7 +8,9 @@ class Player : public Body {
    private:
     int m_healthPoints;
     InputDevice* m_pInputDevice;
-    int m_jumpCount = 0;
+    int m_maxJumpCount;
+    int m_jumpCount;
+    int m_jumpRecoveryTime;
 
    public:
     Player(b2Body* body);
