@@ -6,15 +6,25 @@
 
 class Player : public Body {
    private:
+    enum class STATE { STANDING, MIDAIR };
+
+   private:
+    STATE m_state;
     int m_healthPoints;
     InputDevice* m_pInputDevice;
-    int m_jumpCount = 0;
+    int m_maxJump;
+    int m_jumpCount;
+
+   private:
+    void standingInput(std::vector<InputAction> actions);
+    void midairInput(std::vector<InputAction> actions);
 
    public:
     Player(b2Body* body);
     ~Player();
     void update();
     void landing();
+    void midair();
 };
 
 #endif

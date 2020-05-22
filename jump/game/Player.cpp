@@ -51,7 +51,7 @@ void Player::standingInput(std::vector<InputAction> actions) {
             moveVector.y = 30.0f;
             m_jumpCount--;
             m_jumpRecoveryTime = World::FPS / 2;
-            m_state = STATE::MIDAIR;
+            midair();
         }
     }
 
@@ -62,10 +62,6 @@ void Player::jumpingInput(std::vector<InputAction> actions) {
     b2Vec2 moveVector;
     moveVector.x = 0.0f;
     moveVector.y = m_pBody->GetLinearVelocity().y;
-
-    if (m_jumpCount == m_maxJumpCount) {
-        m_jumpCount--;
-    }
 
     for (InputAction action : actions) {
         if (action == InputAction::RIGHT) {
@@ -88,4 +84,9 @@ void Player::landing() {
     m_state = STATE::STANDING;
 }
 
-void Player::midair() { m_state = STATE::MIDAIR; }
+void Player::midair() {
+    m_state = STATE::MIDAIR;
+    if (m_jumpCount == m_maxJumpCount) {
+        m_jumpCount--;
+    }
+}
