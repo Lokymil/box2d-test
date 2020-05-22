@@ -33,4 +33,4 @@ void Player::update() {
     m_pBody->SetLinearVelocity(moveVector);
 }
 
-void Player::resetJumpCount() { m_jumpCount = 1; }
+void Player::landing() { m_jumpCount = 1; }

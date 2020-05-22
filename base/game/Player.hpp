@@ -14,7 +14,7 @@ class Player : public Body {
     Player(b2Body* body);
     ~Player();
     void update();
-    void resetJumpCount();
+    void landing();
 };
 
 #endif

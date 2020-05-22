@@ -5,9 +5,9 @@ void ContactListener::BeginContact(b2Contact* contact) {
     Body* bodyB = (Body*)contact->GetFixtureB()->GetBody()->GetUserData();
 
     if (bodyA->type == BodyType::PLAYER && bodyB->type == BodyType::GROUND) {
-        ((Player*)bodyA)->resetJumpCount();
+        ((Player*)bodyA)->landing();
     } else if (bodyB->type == BodyType::PLAYER && bodyA->type == BodyType::GROUND) {
-        ((Player*)bodyB)->resetJumpCount();
+        ((Player*)bodyB)->landing();
     }
 }
 
