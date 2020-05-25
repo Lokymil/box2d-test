@@ -31,41 +31,6 @@ void Player::update() {
     m_pState->handleInput(actions);
 }
 
-void Player::standingInput(std::vector<InputAction> actions) {
-    b2Vec2 moveVector;
-    moveVector.x = 0.0f;
-    moveVector.y = m_pBody->GetLinearVelocity().y;
-
-    for (InputAction action : actions) {
-        if (action == InputAction::RIGHT) {
-            moveVector.x = 15.0f;
-        } else if (action == InputAction::LEFT) {
-            moveVector.x = -15.0f;
-        } else if (action == InputAction::JUMP) {
-            moveVector.y = 30.0f;
-            midair();
-        }
-    }
-
-    m_pBody->SetLinearVelocity(moveVector);
-}
-
-void Player::midairInput(std::vector<InputAction> actions) {
-    b2Vec2 moveVector;
-    moveVector.x = 0.0f;
-    moveVector.y = m_pBody->GetLinearVelocity().y;
-
-    for (InputAction action : actions) {
-        if (action == InputAction::RIGHT) {
-            moveVector.x = 15.0f;
-        } else if (action == InputAction::LEFT) {
-            moveVector.x = -15.0f;
-        }
-    }
-
-    m_pBody->SetLinearVelocity(moveVector);
-}
-
 b2Vec2 Player::getMovement() { return m_pBody->GetLinearVelocity(); }
 
 void Player::move(b2Vec2 moveVector) { m_pBody->SetLinearVelocity(moveVector); }

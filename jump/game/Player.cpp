@@ -4,16 +4,25 @@
 
 #include <vector>
 
-#include "../physics/World.hpp"
+#include "./PlayerStates/Midair.hpp"
+#include "./PlayerStates/Standing.hpp"
+
+// ===== Player state =====
+
+PlayerState::PlayerState(Player* player) : m_pPlayer(player) {}
+
+PlayerState::~PlayerState() {}
+
+void PlayerState::handleInput(std::vector<InputAction> actions) {}
+
+// ===== Player =====
 
 Player::Player(b2Body* body) : Body(body) {
     type = BodyType::PLAYER;
-    m_state = STATE::STANDING;
+    m_pState = new Standing(this);
     m_healthPoints = 100;
     m_pInputDevice = new InputDevice();
     m_maxJumpCount = 2;
-    m_jumpCount = m_maxJumpCount;
-    m_jumpRecoveryTime = 0;
 }
 
 Player::~Player() { delete m_pInputDevice; }
@@ -21,87 +30,21 @@ Player::~Player() { delete m_pInputDevice; }
 void Player::update() {
     Body::update();
 
-    b2ContactEdge* pContact = m_pBody->GetContactList();
-    bool isGrounded = false;
-    while (pContact) {
-        if (((Body*)pContact->other->GetUserData())->type == BodyType::GROUND) {
-            isGrounded = true;
-        }
-        pContact = pContact->next;
-    }
-
-    if (!isGrounded) {
-        midair();
-    }
-
-    if (m_jumpRecoveryTime > 0) {
-        m_jumpRecoveryTime--;
-    }
-
     std::vector<InputAction> actions = m_pInputDevice->getActions();
 
-    switch (m_state) {
-        case STATE::STANDING:
-            standingInput(actions);
-            break;
-        case STATE::MIDAIR:
-            jumpingInput(actions);
-            break;
-        default:
-            standingInput(actions);
-    }
+    m_pState->handleInput(actions);
 }
 
-void Player::standingInput(std::vector<InputAction> actions) {
-    b2Vec2 moveVector;
-    moveVector.x = 0.0f;
-    moveVector.y = m_pBody->GetLinearVelocity().y;
+b2Vec2 Player::getMovement() { return m_pBody->GetLinearVelocity(); }
 
-    for (InputAction action : actions) {
-        if (action == InputAction::RIGHT) {
-            moveVector.x = 15.0f;
-        } else if (action == InputAction::LEFT) {
-            moveVector.x = -15.0f;
-        } else if (action == InputAction::JUMP && m_jumpCount > 0 && m_jumpRecoveryTime == 0) {
-            moveVector.y = 30.0f;
-            m_jumpCount--;
-            m_jumpRecoveryTime = World::FPS / 2;
-            midair();
-        }
-    }
-
-    m_pBody->SetLinearVelocity(moveVector);
-}
-
-void Player::jumpingInput(std::vector<InputAction> actions) {
-    b2Vec2 moveVector;
-    moveVector.x = 0.0f;
-    moveVector.y = m_pBody->GetLinearVelocity().y;
-
-    for (InputAction action : actions) {
-        if (action == InputAction::RIGHT) {
-            moveVector.x = 15.0f;
-        } else if (action == InputAction::LEFT) {
-            moveVector.x = -15.0f;
-        } else if (action == InputAction::JUMP && m_jumpCount > 0 && m_jumpRecoveryTime == 0) {
-            moveVector.y = 30.0f;
-            m_jumpCount--;
-            m_jumpRecoveryTime = World::FPS / 2;
-        }
-    }
-
-    m_pBody->SetLinearVelocity(moveVector);
-}
+void Player::move(b2Vec2 moveVector) { m_pBody->SetLinearVelocity(moveVector); }
 
 void Player::landing() {
-    m_jumpCount = m_maxJumpCount;
-    m_jumpRecoveryTime = 0;
-    m_state = STATE::STANDING;
+    delete m_pState;
+    m_pState = new Standing(this);
 }
 
 void Player::midair() {
-    m_state = STATE::MIDAIR;
-    if (m_jumpCount == m_maxJumpCount) {
-        m_jumpCount--;
-    }
+    delete m_pState;
+    m_pState = new Midair(this, m_maxJumpCount - 1);
 }

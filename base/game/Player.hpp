@@ -26,10 +26,6 @@ class Player : public Body {
     int m_healthPoints;
     InputDevice* m_pInputDevice;
 
-   private:
-    void standingInput(std::vector<InputAction> actions);
-    void midairInput(std::vector<InputAction> actions);
-
    public:
     Player(b2Body* body);
     ~Player();
