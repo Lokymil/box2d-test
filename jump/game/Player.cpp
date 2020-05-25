@@ -1,5 +1,7 @@
 #include "Player.hpp"
 
+#include <Box2D/Dynamics/Contacts/b2Contact.h>
+
 #include <vector>
 
 #include "../physics/World.hpp"
@@ -18,6 +20,19 @@ Player::~Player() { delete m_pInputDevice; }
 
 void Player::update() {
     Body::update();
+
+    b2ContactEdge* pContact = m_pBody->GetContactList();
+    bool isGrounded = false;
+    while (pContact) {
+        if (((Body*)pContact->other->GetUserData())->type == BodyType::GROUND) {
+            isGrounded = true;
+        }
+        pContact = pContact->next;
+    }
+
+    if (!isGrounded) {
+        midair();
+    }
 
     if (m_jumpRecoveryTime > 0) {
         m_jumpRecoveryTime--;

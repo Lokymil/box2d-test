@@ -18,6 +18,7 @@ World::~World() { delete m_pWorld; }
 
 b2Body* World::init() {
     addStaticBody(0.0f, -15.0f, 20.0f, 5.0f, BodyType::GROUND);
+    addStaticBody(25.2f, -15.0f, 5.0f, 5.0f, BodyType::GROUND);
     addStaticBody(3.0f, -5.5f, 2.0f, 0.5f, BodyType::GROUND);
     addStaticBody(8.0f, -0.5f, 2.0f, 0.5f, BodyType::GROUND);
     addStaticBody(-8.0f, -0.5f, 2.0f, 0.5f, BodyType::GROUND);

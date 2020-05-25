@@ -6,7 +6,7 @@
 
 class Player : public Body {
    private:
-    enum class STATE { STANDING, MIDAIR };
+    enum class STATE : int { STANDING = 0, MIDAIR = 1 };
 
    private:
     STATE m_state;
