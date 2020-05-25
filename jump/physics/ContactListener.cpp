@@ -1,6 +1,7 @@
 #include "ContactListener.hpp"
 
 void ContactListener::BeginContact(b2Contact* contact) {
+    b2ContactListener::BeginContact(contact);
     Body* bodyA = (Body*)contact->GetFixtureA()->GetBody()->GetUserData();
     Body* bodyB = (Body*)contact->GetFixtureB()->GetBody()->GetUserData();
 
@@ -11,4 +12,4 @@ void ContactListener::BeginContact(b2Contact* contact) {
     }
 }
 
-void ContactListener::EndContact(b2Contact* contact) {}
+void ContactListener::EndContact(b2Contact* contact) { b2ContactListener::EndContact(contact); }

@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "./PlayerStates/Landing.hpp"
 #include "./PlayerStates/Midair.hpp"
 #include "./PlayerStates/Standing.hpp"
 
@@ -40,6 +41,11 @@ b2Vec2 Player::getMovement() { return m_pBody->GetLinearVelocity(); }
 void Player::move(b2Vec2 moveVector) { m_pBody->SetLinearVelocity(moveVector); }
 
 void Player::landing() {
+    delete m_pState;
+    m_pState = new Landing(this);
+}
+
+void Player::standing() {
     delete m_pState;
     m_pState = new Standing(this);
 }

@@ -38,6 +38,7 @@ class Player : public Body {
     b2Vec2 getMovement();
     void move(b2Vec2 moveVector);
     void landing();
+    void standing();
     void midair();
 };
 

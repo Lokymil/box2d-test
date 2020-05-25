@@ -22,6 +22,7 @@ class PlayerState {
 
 class Player : public Body {
    private:
+    // TODO use unique_ptr
     PlayerState* m_pState;
     int m_healthPoints;
     InputDevice* m_pInputDevice;
