@@ -2,9 +2,22 @@
 
 #include <vector>
 
+#include "./PlayerStates/Midair.hpp"
+#include "./PlayerStates/Standing.hpp"
+
+// ===== Player state =====
+
+PlayerState::PlayerState(Player* player) : m_pPlayer(player) {}
+
+PlayerState::~PlayerState() {}
+
+void PlayerState::handleInput(std::vector<InputAction> actions) {}
+
+// ===== Player =====
+
 Player::Player(b2Body* body) : Body(body) {
     type = BodyType::PLAYER;
-    m_state = STATE::STANDING;
+    m_pState = new Standing(this);
     m_healthPoints = 100;
     m_pInputDevice = new InputDevice();
 }
@@ -15,16 +28,7 @@ void Player::update() {
     Body::update();
     std::vector<InputAction> actions = m_pInputDevice->getActions();
 
-    switch (m_state) {
-        case STATE::STANDING:
-            standingInput(actions);
-            break;
-        case STATE::MIDAIR:
-            midairInput(actions);
-            break;
-        default:
-            standingInput(actions);
-    }
+    m_pState->handleInput(actions);
 }
 
 void Player::standingInput(std::vector<InputAction> actions) {
@@ -62,6 +66,16 @@ void Player::midairInput(std::vector<InputAction> actions) {
     m_pBody->SetLinearVelocity(moveVector);
 }
 
-void Player::landing() { m_state = STATE::STANDING; }
+b2Vec2 Player::getMovement() { return m_pBody->GetLinearVelocity(); }
 
-void Player::midair() { m_state = STATE::MIDAIR; }
+void Player::move(b2Vec2 moveVector) { m_pBody->SetLinearVelocity(moveVector); }
+
+void Player::landing() {
+    delete m_pState;
+    m_pState = new Standing(this);
+}
+
+void Player::midair() {
+    delete m_pState;
+    m_pState = new Midair(this);
+}

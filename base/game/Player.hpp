@@ -4,12 +4,25 @@
 #include "../input/InputDevice.hpp"
 #include "Body.hpp"
 
+// ===== Player state =====
+
+class Player;
+
+class PlayerState {
+   protected:
+    Player* m_pPlayer;
+
+   public:
+    PlayerState(Player* player);
+    virtual ~PlayerState();
+    virtual void handleInput(std::vector<InputAction> actions);
+};
+
+//===== Player =====
+
 class Player : public Body {
    private:
-    enum class STATE { STANDING, MIDAIR };
-
-   private:
-    STATE m_state;
+    PlayerState* m_pState;
     int m_healthPoints;
     InputDevice* m_pInputDevice;
 
@@ -21,6 +34,8 @@ class Player : public Body {
     Player(b2Body* body);
     ~Player();
     void update();
+    b2Vec2 getMovement();
+    void move(b2Vec2 moveVector);
     void landing();
     void midair();
 };
