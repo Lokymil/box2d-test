@@ -6,6 +6,7 @@
 
 Midair::Midair(Player* player, int jumpCount) : PlayerState(player), m_jumpCount(jumpCount) {
     m_jumpRecovery = World::FPS / 2;
+    m_stateType = PlayerStateType::MIDAIR;
 }
 
 Midair::~Midair() {}

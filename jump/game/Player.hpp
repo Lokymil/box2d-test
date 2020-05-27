@@ -8,14 +8,18 @@
 
 class Player;
 
+enum class PlayerStateType { LANDING, STANDING, MIDAIR };
+
 class PlayerState {
    protected:
     Player* m_pPlayer;
+    PlayerStateType m_stateType;
 
    public:
     PlayerState(Player* player);
     virtual ~PlayerState();
     virtual void handleInput(std::vector<InputAction> actions);
+    const PlayerStateType getStateType();
 };
 
 //===== Player =====
@@ -37,8 +41,8 @@ class Player : public Body {
     void update();
     b2Vec2 getMovement();
     void move(b2Vec2 moveVector);
-    void landing();
-    void standing();
+    void land();
+    void stand();
     void midair();
 };
 

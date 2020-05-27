@@ -4,7 +4,10 @@
 
 #include "../../physics/World.hpp"
 
-Landing::Landing(Player* player) : PlayerState(player) { m_landRecovery = World::FPS / 6; }
+Landing::Landing(Player* player) : PlayerState(player) {
+    m_landRecovery = World::FPS / 6;
+    m_stateType = PlayerStateType::LANDING;
+}
 
 Landing::~Landing() {}
 
@@ -25,6 +28,6 @@ void Landing::handleInput(std::vector<InputAction> actions) {
     if (m_landRecovery > 0) {
         m_landRecovery--;
     } else {
-        m_pPlayer->standing();
+        m_pPlayer->stand();
     }
 }

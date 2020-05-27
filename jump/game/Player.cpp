@@ -16,6 +16,8 @@ PlayerState::~PlayerState() {}
 
 void PlayerState::handleInput(std::vector<InputAction> actions) {}
 
+const PlayerStateType PlayerState::getStateType() { return m_stateType; }
+
 // ===== Player =====
 
 Player::Player(b2Body* body) : Body(body) {
@@ -40,12 +42,14 @@ b2Vec2 Player::getMovement() { return m_pBody->GetLinearVelocity(); }
 
 void Player::move(b2Vec2 moveVector) { m_pBody->SetLinearVelocity(moveVector); }
 
-void Player::landing() {
-    delete m_pState;
-    m_pState = new Landing(this);
+void Player::land() {
+    if (m_pState->getStateType() == PlayerStateType::MIDAIR) {
+        delete m_pState;
+        m_pState = new Landing(this);
+    }
 }
 
-void Player::standing() {
+void Player::stand() {
     delete m_pState;
     m_pState = new Standing(this);
 }
