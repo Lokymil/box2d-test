@@ -3,6 +3,8 @@
 
 #include <SDL2/SDL.h>
 
+#include <glm/glm.hpp>
+
 #include "../physics/World.hpp"
 #include "Camera.hpp"
 
@@ -21,6 +23,9 @@ class Screen {
    private:
     void updateBodyToDraw(b2Body* body);
     void drawBody(b2Body* body);
+    void drawPolygon(glm::mat4 projMatrix, b2Vec2 bodyCenter, b2PolygonShape* shape);
+    void drawEdge(glm::mat4 projMatrix, b2Vec2 bodyCenter, b2EdgeShape* shape);
+    void drawCenter(glm::mat4 projMatrix, b2Vec2 bodyCenter);
 
    public:
     Screen(){};

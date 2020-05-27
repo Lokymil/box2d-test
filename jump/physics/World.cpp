@@ -26,7 +26,7 @@ b2Body* World::init() {
     // Player
     b2BodyDef playerDef;
     playerDef.type = b2_dynamicBody;
-    playerDef.position.Set(0.0f, -9.0f);
+    playerDef.position.Set(0.0f, -8.0f);
 
     b2Body* player = m_pWorld->CreateBody(&playerDef);
     player->SetUserData(new Player(player));
@@ -37,7 +37,9 @@ b2Body* World::init() {
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &playerBox;
     fixtureDef.density = 1.0f;
-    fixtureDef.friction = 0.3f;
+    fixtureDef.friction = 0.0f;
+    FixtureType type = FixtureType::PLAYER;
+    fixtureDef.userData = &type;
 
     player->CreateFixture(&fixtureDef);
 
@@ -52,9 +54,22 @@ void World::addStaticBody(float x, float y, float widthFromOrigin, float heightF
     b2Body* body = m_pWorld->CreateBody(&bodyDef);
     body->SetUserData(new Ground(body));
 
-    b2PolygonShape groundBox;
-    groundBox.SetAsBox(widthFromOrigin, heightFromOrigin);
-    body->CreateFixture(&groundBox, 0.0f);
+    addEdgeToBody(-widthFromOrigin, heightFromOrigin, widthFromOrigin, heightFromOrigin, body, FixtureType::FLOOR);
+    addEdgeToBody(-widthFromOrigin, heightFromOrigin, -widthFromOrigin, -heightFromOrigin, body, FixtureType::WALL);
+    addEdgeToBody(widthFromOrigin, heightFromOrigin, widthFromOrigin, -heightFromOrigin, body, FixtureType::WALL);
+    addEdgeToBody(-widthFromOrigin, -heightFromOrigin, widthFromOrigin, -heightFromOrigin, body, FixtureType::CEIL);
+}
+
+void World::addEdgeToBody(float x1, float y1, float x2, float y2, b2Body* body, FixtureType type) {
+    b2Vec2 vertex1;
+    vertex1.Set(x1, y1);
+    b2Vec2 vertex2;
+    vertex2.Set(x2, y2);
+    b2EdgeShape edgeShape;
+    edgeShape.Set(vertex1, vertex2);
+
+    b2Fixture* edge = body->CreateFixture(&edgeShape, 1.0f);
+    edge->SetUserData(&type);
 }
 
 b2Body* World::getBodyList() { return m_pWorld->GetBodyList(); }
