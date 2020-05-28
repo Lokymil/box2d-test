@@ -1,6 +1,8 @@
 #ifndef PLAYER_H_
 #define PLAYER_H_
 
+#include <iostream>
+
 #include "../input/InputDevice.hpp"
 #include "Body.hpp"
 
@@ -26,7 +28,7 @@ class PlayerState {
 
 class Player : public Body {
    private:
-    PlayerState* m_pState;
+    std::unique_ptr<PlayerState> m_pState;
     int m_healthPoints;
     InputDevice* m_pInputDevice;
     int m_maxJumpCount;

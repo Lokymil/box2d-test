@@ -1,7 +1,5 @@
 #include "ContactListener.hpp"
 
-#include <iostream>
-
 #include "../game/Body.hpp"
 #include "../game/Player.hpp"
 #include "World.hpp"

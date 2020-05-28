@@ -3,8 +3,6 @@
 #include <Box2D/Collision/Shapes/b2PolygonShape.h>
 #include <Box2D/Dynamics/b2Fixture.h>
 
-#include <iostream>
-
 #include "../game/Ground.hpp"
 #include "../game/Player.hpp"
 #include "ContactListener.hpp"

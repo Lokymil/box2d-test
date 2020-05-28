@@ -22,7 +22,7 @@ const PlayerStateType PlayerState::getStateType() { return m_stateType; }
 
 Player::Player(b2Body* body) : Body(body) {
     type = BodyType::PLAYER;
-    m_pState = new Standing(this);
+    m_pState.reset(new Standing(this));
     m_healthPoints = 100;
     m_pInputDevice = new InputDevice();
     m_maxJumpCount = 2;
@@ -44,17 +44,10 @@ void Player::move(b2Vec2 moveVector) { m_pBody->SetLinearVelocity(moveVector); }
 
 void Player::land() {
     if (m_pState->getStateType() == PlayerStateType::MIDAIR) {
-        delete m_pState;
-        m_pState = new Landing(this);
+        m_pState.reset(new Landing(this));
     }
 }
 
-void Player::stand() {
-    delete m_pState;
-    m_pState = new Standing(this);
-}
+void Player::stand() { m_pState.reset(new Standing(this)); }
 
-void Player::midair() {
-    delete m_pState;
-    m_pState = new Midair(this, m_maxJumpCount - 1);
-}
+void Player::midair() { m_pState.reset(new Midair(this, m_maxJumpCount - 1)); }
