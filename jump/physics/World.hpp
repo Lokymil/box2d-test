@@ -10,7 +10,7 @@
 
 #define DEFAULT_GRAVITY -80.0f
 
-enum class FixtureType { FLOOR, WALL, CEIL, PLAYER };
+enum FixtureType { FLOOR, WALL, CEIL, PLAYER };
 
 class World {
    public:

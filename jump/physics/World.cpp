@@ -3,6 +3,8 @@
 #include <Box2D/Collision/Shapes/b2PolygonShape.h>
 #include <Box2D/Dynamics/b2Fixture.h>
 
+#include <iostream>
+
 #include "../game/Ground.hpp"
 #include "../game/Player.hpp"
 #include "ContactListener.hpp"
@@ -38,8 +40,10 @@ b2Body* World::init() {
     fixtureDef.shape = &playerBox;
     fixtureDef.density = 1.0f;
     fixtureDef.friction = 0.0f;
-    FixtureType type = FixtureType::PLAYER;
-    fixtureDef.userData = &type;
+
+    FixtureType* p_type = (FixtureType*)malloc(sizeof(FixtureType));
+    *p_type = FixtureType::PLAYER;
+    fixtureDef.userData = p_type;
 
     player->CreateFixture(&fixtureDef);
 
@@ -68,8 +72,11 @@ void World::addEdgeToBody(float x1, float y1, float x2, float y2, b2Body* body, 
     b2EdgeShape edgeShape;
     edgeShape.Set(vertex1, vertex2);
 
+    FixtureType* p_type = (FixtureType*)malloc(sizeof(FixtureType));
+    *p_type = type;
+
     b2Fixture* edge = body->CreateFixture(&edgeShape, 1.0f);
-    edge->SetUserData(&type);
+    edge->SetUserData(p_type);
 }
 
 b2Body* World::getBodyList() { return m_pWorld->GetBodyList(); }
