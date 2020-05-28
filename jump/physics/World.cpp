@@ -41,9 +41,7 @@ b2Body* World::init() {
     fixtureDef.density = 1.0f;
     fixtureDef.friction = 0.0f;
 
-    FixtureType* p_type = (FixtureType*)malloc(sizeof(FixtureType));
-    *p_type = FixtureType::PLAYER;
-    fixtureDef.userData = p_type;
+    fixtureDef.userData = new FixtureType{FixtureType::PLAYER};
 
     player->CreateFixture(&fixtureDef);
 
@@ -72,11 +70,8 @@ void World::addEdgeToBody(float x1, float y1, float x2, float y2, b2Body* body, 
     b2EdgeShape edgeShape;
     edgeShape.Set(vertex1, vertex2);
 
-    FixtureType* p_type = (FixtureType*)malloc(sizeof(FixtureType));
-    *p_type = type;
-
     b2Fixture* edge = body->CreateFixture(&edgeShape, 1.0f);
-    edge->SetUserData(p_type);
+    edge->SetUserData(new FixtureType{type});
 }
 
 b2Body* World::getBodyList() { return m_pWorld->GetBodyList(); }
