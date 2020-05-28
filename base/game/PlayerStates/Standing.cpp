@@ -2,7 +2,7 @@
 
 #include <Box2D/Common/b2Math.h>
 
-Standing::Standing(Player* player) : PlayerState(player) {}
+Standing::Standing(Player* player) : PlayerState(player) { m_stateType = PlayerStateType::STANDING; }
 
 Standing::~Standing() {}
 

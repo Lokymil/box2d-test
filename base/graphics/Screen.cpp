@@ -5,7 +5,6 @@
 #include <GL/gl.h>
 #include <GLES3/gl3.h>
 
-#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "../game/Body.hpp"
@@ -23,8 +22,8 @@ int Screen::init() {
         return -1;
     }
 
-    m_pWindow = SDL_CreateWindow("Root of all evil", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH,
-                                 WINDOW_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
+    m_pWindow = SDL_CreateWindow("Jump", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT,
+                                 SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
 
     if (m_pWindow == NULL) {
         SDL_Log("Error on window creation: %s", SDL_GetError());
@@ -67,14 +66,8 @@ void Screen::updateBodyToDraw(b2Body* body) {
 }
 
 void Screen::drawBody(b2Body* body) {
-    b2Shape* shape = body->GetFixtureList()->GetShape();
-    b2Shape::Type type = shape->GetType();
-    if (type != b2Shape::Type::e_polygon) {
-        return;
-    }
-
     b2Vec2 pov = m_pCamera->getPosition();
-    b2Vec2 pos = body->GetPosition();
+    b2Vec2 bodyCenter = body->GetPosition();
 
     float left = pov.x * M2P - WINDOW_WIDTH / 2;
     float right = pov.x * M2P + WINDOW_WIDTH / 2;
@@ -83,16 +76,37 @@ void Screen::drawBody(b2Body* body) {
 
     glm::mat4 projMatrix = glm::ortho(left, right, bottom, top);
 
-    b2PolygonShape* polygon = (b2PolygonShape*)shape;
-    int verticesNumber = polygon->m_count;
+    drawCenter(projMatrix, bodyCenter);
+
+    b2Fixture* fixture = body->GetFixtureList();
+    while (fixture) {
+        b2Shape* shape = fixture->GetShape();
+        b2Shape::Type shapeType = shape->GetType();
+        switch (shapeType) {
+            case b2Shape::e_polygon:
+                drawPolygon(projMatrix, bodyCenter, (b2PolygonShape*)shape);
+                break;
+            case b2Shape::e_edge:
+                drawEdge(projMatrix, bodyCenter, (b2EdgeShape*)shape);
+                break;
+            default:
+                break;
+        }
+
+        fixture = fixture->GetNext();
+    }
+}
+
+void Screen::drawPolygon(glm::mat4 projMatrix, b2Vec2 bodyCenter, b2PolygonShape* shape) {
+    int verticesNumber = shape->m_count;
     float vertices[verticesNumber * 2];
 
     for (int i = 0; i < verticesNumber; i++) {
-        b2Vec2 vertex = polygon->m_vertices[i];
+        b2Vec2 vertex = shape->m_vertices[i];
 
         glm::vec4 posVertex;
-        posVertex.x = (pos.x + vertex.x) * M2P;
-        posVertex.y = (pos.y + vertex.y) * M2P;
+        posVertex.x = (bodyCenter.x + vertex.x) * M2P;
+        posVertex.y = (bodyCenter.y + vertex.y) * M2P;
         posVertex.z = 0;
         posVertex.w = 1;
 
@@ -105,4 +119,44 @@ void Screen::drawBody(b2Body* body) {
     glEnableVertexAttribArray(0);
     glDrawArrays(GL_POLYGON, 0, verticesNumber);
     glDisableVertexAttribArray(0);
+}
+
+void Screen::drawEdge(glm::mat4 projMatrix, b2Vec2 bodyCenter, b2EdgeShape* shape) {
+    glm::vec4 vertex1;
+    vertex1.x = (bodyCenter.x + shape->m_vertex1.x) * M2P;
+    vertex1.y = (bodyCenter.y + shape->m_vertex1.y) * M2P;
+    vertex1.z = 0;
+    vertex1.w = 1;
+    glm::vec4 vertex1NDC = projMatrix * vertex1;
+
+    glm::vec4 vertex2;
+    vertex2.x = (bodyCenter.x + shape->m_vertex2.x) * M2P;
+    vertex2.y = (bodyCenter.y + shape->m_vertex2.y) * M2P;
+    vertex2.z = 0;
+    vertex2.w = 1;
+    glm::vec4 vertex2NDC = projMatrix * vertex2;
+
+    glBegin(GL_LINES);
+    glVertex2f(vertex1NDC.x, vertex1NDC.y);
+    glVertex2f(vertex2NDC.x, vertex2NDC.y);
+    glEnd();
+}
+
+void Screen::drawCenter(glm::mat4 projMatrix, b2Vec2 bodyCenter) {
+    glm::vec4 vertex;
+    vertex.x = bodyCenter.x * M2P;
+    vertex.y = bodyCenter.y * M2P;
+    vertex.z = 0;
+    vertex.w = 1;
+    glm::vec4 vertexNDC = projMatrix * vertex;
+
+    glBegin(GL_LINES);
+    glVertex2f(vertexNDC.x - 0.01f, vertexNDC.y);
+    glVertex2f(vertexNDC.x + 0.01f, vertexNDC.y);
+    glEnd();
+
+    glBegin(GL_LINES);
+    glVertex2f(vertexNDC.x, vertexNDC.y - 0.01f);
+    glVertex2f(vertexNDC.x, vertexNDC.y + 0.01f);
+    glEnd();
 }
